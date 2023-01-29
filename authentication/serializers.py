@@ -1,21 +1,14 @@
-from rest_framework.serializers import ModelSerializer, EmailField, CharField, ValidationError
-from django.contrib.auth import authenticate
+from rest_framework.serializers import ModelSerializer
 
 from .models import User
 
 
-# class LoginSerializer(ModelSerializer):
-#     email = EmailField()
-#     password = CharField(write_only=True)
-
-#     def validate(self, data):
-#         user = authenticate(**data)
-#         if user is None:
-#             raise ValidationError("Invalid credentials")
-#         return {"user": user}
-
-
-class UserSerializer(ModelSerializer):
+class UserDetailSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'role']
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'role']
+
+class UserListSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'role']

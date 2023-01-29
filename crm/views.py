@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .models import Client, Contract, Event
 from .serializers import ClientListSerializer, ClientDetailSerializer, ContractSerializer, EventSerializer
-from .permissions import IsAuthorizedSalesOrAssignedSupportToManageEvents, IsAuthorizedToAccessClientOrContract
+from .permissions import IsAuthorizedToAccessClient, IsAuthorizedToAccessContract, IsAuthorizedToAccessEvent
 
 
 class MultipleSerializerMixin:
@@ -18,29 +18,29 @@ class MultipleSerializerMixin:
 
 class RoleMixin:
 
-    def isSales(self):
+    def is_sales(self):
         return self.request.user.role == "Sales"
 
-    def isSupport(self):
+    def is_support(self):
         return self.request.user.role == "Support"
 
-    def isManagement(self):
+    def is_management(self):
         return self.request.user.role == "Management"
 
-    def isSupportOfEvent(self, obj):
+    def is_support_of_event(self, obj):
         support_contacts = Event.objects.filter(client=obj).support_contact
         return self.request.user.role == 'Support' and self.request.user in support_contacts
 
 class IsSalesContactMixin:
 
-    def isSalesContact(self, obj):
+    def is_sales_contact(self, obj):
         return self.request.user.role == 'Sales' and obj.sales_contact == self.request.user
 
 class ClientViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, ModelViewSet):
 
     serializer_class = ClientListSerializer
     detail_serializer_class = ClientDetailSerializer
-    permission_classes = [IsAuthenticated, IsAuthorizedToAccessClientOrContract]
+    permission_classes = [IsAuthenticated, IsAuthorizedToAccessClient]
     filter_backends = [SearchFilter]
     search_fields = ['last_name', 'email']
 
@@ -62,7 +62,7 @@ class ClientViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, Mod
 class ContractViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, ModelViewSet):
     
     serializer_class = ContractSerializer
-    permission_classes = [IsAuthenticated, IsAuthorizedToAccessClientOrContract]
+    permission_classes = [IsAuthenticated, IsAuthorizedToAccessContract]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['client__last_name', 'client__email', 'amount', 'date_created']
     ordering_fields = ['payment_due']
@@ -81,7 +81,7 @@ class ContractViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, M
 
 class EventViewSet(ModelViewSet, RoleMixin):
     serializer_class = EventSerializer
-    permission_classes = [IsAuthenticated, IsAuthorizedSalesOrAssignedSupportToManageEvents]
+    permission_classes = [IsAuthenticated, IsAuthorizedToAccessEvent]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['client__last_name', 'client__email', 'event_date']
     ordering_fields = ['event_date']
@@ -99,3 +99,9 @@ class EventViewSet(ModelViewSet, RoleMixin):
         client = Client.objects.get(pk=contract.client.id)
         request.data["client"] = client.pk
         return super().create(request, *args, **kwargs)
+
+    def is_support_contact(self, obj):
+        return obj.support_contact == self.request.user
+
+    def is_event_in_progress(self, obj):
+        return obj.event_status == 'In progress'
