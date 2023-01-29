@@ -14,7 +14,7 @@ class Client(models.Model):
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
     sales_contact = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='client'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='clients'
     )
     def __str__(self):
         return f"Client: {self.first_name} {self.last_name} - Company: {self.company_name}"
@@ -27,10 +27,10 @@ class Contract(models.Model):
     status = models.BooleanField(default=False, verbose_name='signed')
     payment_due = models.DateField(null=True)
     sales_contact = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, related_name='contract'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, related_name='contracts'
     )
     client = models.ForeignKey(
-        to=Client, on_delete=models.CASCADE, null=False, related_name='contract'
+        to=Client, on_delete=models.CASCADE, null=False, related_name='contracts'
     )
 
     def __str__(self):
@@ -56,11 +56,11 @@ class Event(models.Model):
     attendees = models.IntegerField()
     notes = models.TextField()
     client = models.ForeignKey(
-        to=Client, on_delete=models.CASCADE, null=False, related_name='event'
+        to=Client, on_delete=models.CASCADE, null=False, related_name='events'
     )
     event_date = models.DateTimeField()
     support_contact = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, related_name='event'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, related_name='events'
     )
     event_status = models.CharField(max_length=25, choices=STATUS_CHOICES, default=IN_PROGRESS)
 
