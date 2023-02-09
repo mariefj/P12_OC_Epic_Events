@@ -84,3 +84,9 @@ class ClientDetailSerializer(ModelSerializer):
             'events',
         ]
 
+    def validate_sales_contact(self, value):
+        user = User.objects.filter(id=value)[0]
+        if not user or user.role != 'Sales':
+            raise ValidationError('Sales contact must be a sales user')
+        return value
+

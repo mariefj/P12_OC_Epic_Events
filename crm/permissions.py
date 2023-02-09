@@ -13,8 +13,10 @@ class IsAuthorizedToAccessClient(BasePermission):
             return True
         if request.method in SAFE_METHODS:
             return view.is_sales() or view.is_support_of_event(obj)
-        else:
-           return view.is_sales_contact(obj)
+        if request.method == 'CREATE':
+            return view.is_sales()
+        
+        return view.is_sales_contact(obj)
 
 class IsAuthorizedToAccessContract(BasePermission):
 

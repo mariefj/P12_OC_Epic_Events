@@ -55,9 +55,6 @@ class ClientViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, Mod
             return Client.objects.filter(id__in=clients_support)
         return clients
 
-    def perform_create(self, serializer):
-        serializer.save(sales_contact=self.request.user)
-
 
 class ContractViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, ModelViewSet):
     
@@ -75,9 +72,6 @@ class ContractViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, M
             return Contract.objects.filter(id__in=contracts_support)
         return contracts
 
-    def perform_create(self, serializer):
-        serializer.save(sales_contact=self.request.user)
-
 
 class EventViewSet(ModelViewSet, RoleMixin):
     serializer_class = EventSerializer
@@ -91,14 +85,6 @@ class EventViewSet(ModelViewSet, RoleMixin):
         if self.request.user.role == 'Support':
             return Event.objects.filter(support_contact=self.request.user.id)
         return events
-
-    def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        contract_id = request.data['contract']
-        contract = Contract.objects.get(pk=contract_id)
-        client = Client.objects.get(pk=contract.client.id)
-        request.data["client"] = client.pk
-        return super().create(request, *args, **kwargs)
 
     def is_support_contact(self, obj):
         return obj.support_contact == self.request.user
