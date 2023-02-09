@@ -35,7 +35,7 @@ class EventSerializer(ModelSerializer):
             'client',
             'event_date',
             'support_contact',
-            'status',
+            'event_status',
         ]
 
 class ClientListSerializer(ModelSerializer):

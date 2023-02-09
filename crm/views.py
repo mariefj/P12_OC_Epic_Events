@@ -28,7 +28,8 @@ class RoleMixin:
         return self.request.user.role == "Management"
 
     def is_support_of_event(self, obj):
-        support_contacts = Event.objects.filter(client=obj).support_contact
+        events =  Event.objects.filter(client=obj)
+        support_contacts = [event.support_contact for event in events]
         return self.request.user.role == 'Support' and self.request.user in support_contacts
 
 class IsSalesContactMixin:
