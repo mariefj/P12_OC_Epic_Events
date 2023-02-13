@@ -16,7 +16,8 @@ class UserViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        data["is_staff"] = True
+        if data["role"] == 'Management':
+            data["is_staff"] = True
         data["password"] = make_password(request.data["password"])
         serializer = UserDetailSerializer(data=data)
 

@@ -46,15 +46,14 @@ class ClientViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, Mod
     search_fields = ['last_name', 'email']
 
     def get_queryset(self):
-        clients = Client.objects.all()
-        if self.request.user.role == "Support":
-            events = Event.objects.filter(support_contact=self.request.user)
-            clients_support = []
-            for event in events:
-                if event.support_contact == self.request.user:
-                    clients_support.append(event.client.pk)
-            return Client.objects.filter(id__in=clients_support)
-        return clients
+        role = self.request.user.role
+        if role == "Support":
+            events = self.request.user.events.all()
+            return Client.objects.filter(events__in=events)
+        if role == 'Sales':
+            return self.request.user.clients.all()
+        if role == 'Management':
+            return Client.objects.all()
 
 
 class ContractViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, ModelViewSet):
@@ -66,12 +65,11 @@ class ContractViewSet(MultipleSerializerMixin, RoleMixin, IsSalesContactMixin, M
     ordering_fields = ['payment_due']
 
     def get_queryset(self):
-        contracts = Contract.objects.all()
-        if self.request.user.role == "Support":
-            events = Event.objects.filter(support_contact=self.request.user)
-            contracts_support = [event.contract.pk for event in events]
-            return Contract.objects.filter(id__in=contracts_support)
-        return contracts
+        role = self.request.user.role
+        if role == 'Sales':
+            return self.request.user.contracts.all()
+        if role == 'Management':
+            return Contract.objects.all()
 
 
 class EventViewSet(ModelViewSet, RoleMixin):
@@ -82,10 +80,11 @@ class EventViewSet(ModelViewSet, RoleMixin):
     ordering_fields = ['event_date']
 
     def get_queryset(self):
-        events = Event.objects.all()
-        if self.request.user.role == 'Support':
-            return Event.objects.filter(support_contact=self.request.user.id)
-        return events
+        role = self.request.user.role
+        if role == "Support":
+            return self.request.user.events.all()
+        if role == 'Management':
+            return Event.objects.all()
 
     def is_support_contact(self, obj):
         return obj.support_contact == self.request.user
