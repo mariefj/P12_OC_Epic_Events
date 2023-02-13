@@ -22,6 +22,7 @@ class ContractSerializer(ModelSerializer):
             'sales_contact',
             'client',
         ]
+        read_only_fields = ['id', 'date_created', 'date_updated']
 
 class EventSerializer(ModelSerializer):
     class Meta:
@@ -37,6 +38,7 @@ class EventSerializer(ModelSerializer):
             'support_contact',
             'event_status',
         ]
+        read_only_fields = ['id', 'date_created', 'date_updated']
 
 class ClientListSerializer(ModelSerializer):
     class Meta:
@@ -53,6 +55,13 @@ class ClientListSerializer(ModelSerializer):
             'date_updated',
             'sales_contact',
         ]
+        read_only_fields = ['id', 'date_created', 'date_updated']
+
+    def validate_sales_contact(self, value):
+        user = User.objects.filter(id=value)[0]
+        if not user or user.role != 'Sales':
+            raise ValidationError('Sales contact must be a sales user')
+        return value
 
 
 class ClientDetailSerializer(ModelSerializer):
@@ -83,10 +92,6 @@ class ClientDetailSerializer(ModelSerializer):
             'contracts',
             'events',
         ]
+        read_only_fields = ['id', 'date_created', 'date_updated']
 
-    def validate_sales_contact(self, value):
-        user = User.objects.filter(id=value)[0]
-        if not user or user.role != 'Sales':
-            raise ValidationError('Sales contact must be a sales user')
-        return value
 

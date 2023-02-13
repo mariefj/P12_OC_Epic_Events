@@ -4,7 +4,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 class IsAuthorizedToAccessClient(BasePermission):
 
     def has_permission(self, request, view):
-        if request.method == 'CREATE':
+        if request.method == 'POST':
             return view.is_sales() or view.is_management()
         return True
     
@@ -31,14 +31,14 @@ class IsAuthorizedToAccessContract(BasePermission):
         if request.method in SAFE_METHODS:
             return view.is_sales_contact(obj)
         else:
-            if request.method == 'UPDATE':
-                return view.is_sales() and request.body == {"status": "signed"}
+            if request.method in ['PUT', 'PATCH']:
+                return view.is_sales() and request.data == {'status': True}
             return view.is_sales()
 
 class IsAuthorizedToAccessEvent(BasePermission):
 
     def has_permission(self, request, view):
-        if request.method == 'CREATE':
+        if request.method == 'POST':
                 return view.is_sales() or view.is_management()
         return view.is_support() or view.is_management()
 
