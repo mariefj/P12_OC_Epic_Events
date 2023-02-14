@@ -1,12 +1,10 @@
 from rest_framework.serializers import (
     ModelSerializer,
-    SerializerMethodField,
     ValidationError,
 )
 
 from authentication.models import User
 from .models import Client, Contract, Event
-
 
 
 class ContractSerializer(ModelSerializer):
@@ -39,6 +37,12 @@ class EventSerializer(ModelSerializer):
             'event_status',
         ]
         read_only_fields = ['id', 'date_created', 'date_updated']
+    
+    def validate_support_contact(self, value):
+        user = User.objects.filter(id=value.id)[0]
+        if not user or user.role != 'Support':
+            raise ValidationError('Support contact must be a support user')
+        return value
 
 class ClientListSerializer(ModelSerializer):
     class Meta:
@@ -58,7 +62,7 @@ class ClientListSerializer(ModelSerializer):
         read_only_fields = ['id', 'date_created', 'date_updated']
 
     def validate_sales_contact(self, value):
-        user = User.objects.filter(id=value)[0]
+        user = User.objects.filter(id=value.id)[0]
         if not user or user.role != 'Sales':
             raise ValidationError('Sales contact must be a sales user')
         return value
