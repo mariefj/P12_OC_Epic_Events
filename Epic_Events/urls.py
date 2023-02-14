@@ -22,6 +22,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from authentication.views import UserViewSet
 from crm.views import ClientViewSet, ContractViewSet, EventViewSet
 
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
 router = routers.SimpleRouter()
 router.register('clients', ClientViewSet, basename='clients')
 router.register('contracts', ContractViewSet, basename='contracts')
@@ -33,4 +36,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("login/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path('sentry-debug/', trigger_error)
 ]
