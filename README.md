@@ -60,7 +60,7 @@ http:/127.0.0.1:8000
 
 - Create database with PostgreSQL
 
-- In Epic_Events/settings.py, change the following lines according to your settings, PASSWORD is set in Epic_Events/congig.py:
+- In Epic_Events/settings.py, change the following lines according to your settings, PASSWORD is set in Epic_Events/config.py but you can put it here or wherever you want:
 ```
 DATABASES = {
     'default': {
