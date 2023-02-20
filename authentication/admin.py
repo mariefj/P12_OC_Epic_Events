@@ -6,4 +6,4 @@ from .models import User
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     model = User
-    exclude = ['password']
+    # exclude = ['password']

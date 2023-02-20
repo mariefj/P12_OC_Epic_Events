@@ -15,6 +15,8 @@ from datetime import timedelta
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from . import config
+
 sentry_sdk.init(
     dsn="https://7f84712bda5c453db71b2afec9509ea0@o4504678489980928.ingest.sentry.io/4504678503219200",
     integrations=[
@@ -39,7 +41,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure--osh+kc3-(3f*vlt26(zz5hjbuc8fxnennm22-!x$!yhf5917_"
+SECRET_KEY = config.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -96,10 +98,21 @@ WSGI_APPLICATION = "Epic_Events.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'epic_events', 
+        'USER': 'marie', 
+        'PASSWORD': config.PASSWORD,
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
     }
 }
 
