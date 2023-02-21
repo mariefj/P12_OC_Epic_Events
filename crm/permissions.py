@@ -48,7 +48,7 @@ class IsAuthorizedToAccessEvent(BasePermission):
         if view.is_management():
             return True
         if request.method in SAFE_METHODS:
-            return view.is_support_contact()
+            return view.is_support_contact(obj)
         else:
             return view.is_support_contact(obj) and view.is_event_in_progress(obj)
 
