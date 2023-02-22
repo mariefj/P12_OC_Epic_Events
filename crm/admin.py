@@ -27,6 +27,8 @@ class EventAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'support_contact':
             kwargs["queryset"] = User.objects.filter(role="Support")
+        if db_field.name == 'contract':
+            kwargs["queryset"] = Contract.objects.filter(status=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 

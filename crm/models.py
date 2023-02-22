@@ -1,6 +1,5 @@
 from django.db import models
 
-from authentication.models import User
 from django.conf import settings
 
 
@@ -58,6 +57,9 @@ class Event(models.Model):
     client = models.ForeignKey(
         to=Client, on_delete=models.CASCADE, null=False, related_name='events'
     )
+    contract = models.ForeignKey(
+        to=Contract, on_delete=models.CASCADE, null=False, related_name='event'
+    )
     event_date = models.DateTimeField()
     support_contact = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, related_name='events'
@@ -69,6 +71,7 @@ class Event(models.Model):
         Event date: {self.event_date} - 
         status: {self.event_status} - 
         Client: {self.client} - 
+        Contract: {self.contract} -
         Support contact: {self.support_contact} - 
         Attendees: {self.attendees} - 
         Date created: {self.date_created}"""

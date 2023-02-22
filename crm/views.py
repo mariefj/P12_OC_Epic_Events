@@ -91,3 +91,4 @@ class EventViewSet(ModelViewSet, RoleMixin):
 
     def is_event_in_progress(self, obj):
         return obj.event_status == 'In progress'
+

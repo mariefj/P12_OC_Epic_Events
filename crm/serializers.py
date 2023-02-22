@@ -32,6 +32,7 @@ class EventSerializer(ModelSerializer):
             'attendees',
             'notes',
             'client',
+            'contract',
             'event_date',
             'support_contact',
             'event_status',
@@ -42,6 +43,12 @@ class EventSerializer(ModelSerializer):
         user = User.objects.filter(id=value.id)[0]
         if not user or user.role != 'Support':
             raise ValidationError('Support contact must be a support user')
+        return value
+
+    def validate_contract(self, value):
+        contract = Contract.objects.filter(id=value.id)[0]
+        if not contract or contract.status != 1:
+            raise ValidationError('Contract must be signed')
         return value
 
 class ClientListSerializer(ModelSerializer):
